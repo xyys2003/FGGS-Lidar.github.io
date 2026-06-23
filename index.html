@@ -1,252 +1,369 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description"
-        content="FGGS-LiDAR: Ultra-Fast, GPU-Accelerated Simulation from general 3DGS models to LiDAR. Convert any pretrained 3DGS to a watertight mesh, then perform BVH-accelerated LiDAR ray-casting at 500+ FPS.">
-  <meta name="keywords" content="FGGS-LiDAR, 3D Gaussian Splatting, LiDAR simulation, TSDF, BVH, Ray Casting">
-  <title>FGGS-LiDAR: Ultra-Fast, GPU-Accelerated Simulation from General 3DGS Models to LiDAR</title>
+        content="FGGS-LiDAR (IROS 2026): Ultra-Fast, GPU-Accelerated Simulation from general 3DGS models to LiDAR. Convert any pretrained 3DGS into a watertight mesh, then perform BVH-accelerated LiDAR ray-casting at 500+ FPS across up to 4096 parallel environments.">
+  <meta name="keywords" content="FGGS-LiDAR, 3D Gaussian Splatting, LiDAR simulation, TSDF, BVH, Ray Casting, IROS 2026">
+  <title>FGGS-LiDAR · Ultra-Fast LiDAR Simulation from General 3DGS Models (IROS 2026)</title>
 
-  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
-  <link rel="stylesheet" href="./static/css/bulma.min.css">
-  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="preconnect" href="https://rsms.me/">
+  <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./static/css/style.css">
   <link rel="icon" href="./static/images/favicon.svg">
-
-  <style>
-    img.figure {
-      width: 100%;
-      height: auto;
-      border-radius: 12px;
-      display: block;
-      margin: 0 auto;
-      box-shadow: none;
-    }
-    video.demo {
-      width: 100%;
-      max-height: 520px;
-      border-radius: 12px;
-      display: block;
-      margin: 0 auto;
-      box-shadow: none;
-    }
-    .box {
-      border: none !important;
-      box-shadow: none !important;
-      background: transparent !important;
-      padding: 0 !important;
-      margin-top: 2.5rem;
-      margin-bottom: 2.5rem;
-    }
-    p.explain {
-      margin-top: 12px;
-      text-align: justify;
-      font-size: 1rem;
-      line-height: 1.6;
-    }
-    h3.title { margin-bottom: 1rem; }
-    section.section { padding-top: 3rem; padding-bottom: 3rem; }
-    footer.footer p { color: #555; }
-    img.figure:hover { transform: scale(1.01); transition: transform 0.25s ease-in-out; }
-  </style>
 </head>
 
 <body>
 
-<!-- Navbar -->
-<nav class="navbar" role="navigation" aria-label="main navigation">
-  <div class="navbar-menu">
-    <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
-      <a class="navbar-item" href="#top">Home</a>
-      <a class="navbar-item" href="#abstract">Abstract</a>
-      <a class="navbar-item" href="#system">System</a>
-      <a class="navbar-item" href="#results">Results</a>
-      <a class="navbar-item" href="#bibtex">BibTeX</a>
+<!-- ============================ Navbar ============================ -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="#top">
+      <span class="logo"></span>
+      <span>FGGS-LiDAR</span>
+    </a>
+    <div class="nav-links" id="navLinks">
+      <a href="#abstract"><span class="i18n-en">Abstract</span><span class="i18n-zh">摘要</span></a>
+      <a href="#highlights"><span class="i18n-en">Highlights</span><span class="i18n-zh">亮点</span></a>
+      <a href="#method"><span class="i18n-en">Method</span><span class="i18n-zh">方法</span></a>
+      <a href="#results"><span class="i18n-en">Results</span><span class="i18n-zh">结果</span></a>
+      <a href="#bibtex"><span class="i18n-en">BibTeX</span><span class="i18n-zh">引用</span></a>
     </div>
+    <div class="nav-right">
+      <div class="lang-toggle" id="langToggle">
+        <button data-lang="en" class="active">EN</button>
+        <button data-lang="zh">中文</button>
+      </div>
+      <a class="nav-ghost" href="https://github.com/discoverse-dev/FGGS-LiDAR" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17 4.6 18 4.9 18 4.9c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6 4.6-1.5 7.9-5.8 7.9-10.9C23.5 5.7 18.3.5 12 .5z"/></svg>
+        <span class="hide-sm">GitHub</span>
+      </a>
+    </div>
+    <button class="nav-burger" id="navBurger" aria-label="menu">☰</button>
   </div>
 </nav>
 
-<!-- Hero -->
-<section id="top" class="hero">
-  <div class="hero-body">
-    <div class="container is-max-desktop has-text-centered">
-      <h1 class="title is-2 publication-title">
-        FGGS-LiDAR: Ultra-Fast, GPU-Accelerated Simulation from General 3DGS Models to LiDAR
-      </h1>
+<!-- ============================ Hero ============================ -->
+<header id="top" class="hero">
+  <div class="container">
+    <span class="eyebrow">LiDAR Simulation · 3D Gaussian Splatting · IROS 2026</span>
+    <h1>FGGS-LiDAR</h1>
+    <p class="subtitle">
+      <span class="i18n-en">Ultra-Fast, GPU-Accelerated Simulation from General 3DGS Models to LiDAR</span>
+      <span class="i18n-zh">面向通用 3DGS 模型的超快速 GPU 加速 LiDAR 仿真</span>
+    </p>
 
-      <p class="is-size-5">Junzhe Wu<sup>1</sup>, Yufei Jia<sup>2</sup>, Yiyi Yan<sup>3</sup>, Zhixing Chen<sup>1</sup>, Tiao Tan<sup>1</sup>, Zifan Wang<sup>4</sup>, Guangyu Wang<sup>1</sup>, BoKui Chen<sup>1†</sup>, Guyue Zhou<sup>5†</sup></p>
-      <p class="is-size-6"><sup>1</sup>Tsinghua Univ. (Shenzhen) · <sup>2</sup>Tsinghua Univ. (Beijing) · <sup>3</sup>DISCOVER Robotics · <sup>4</sup>HKUST (Guangzhou) · <sup>5</sup>AIR, Tsinghua Univ.</p>
+    <div class="accept-banner">🎉 <span class="i18n-en">Accepted to IROS 2026</span><span class="i18n-zh">已被 IROS 2026 接收</span></div>
 
-      <div class="buttons is-centered" style="margin-top:10px;">
-        <a href="static/pdf/paper.pdf" class="button is-dark is-rounded">Paper</a>
-        <a href="https://arxiv.org/abs/2509.17390" class="button is-dark is-rounded">arXiv</a>
-        <a href="https://github.com/TATP-233/FGGS-LiDAR" class="button is-dark is-rounded">Code</a>
+    <p class="authors">
+      Junzhe Wu<sup>1*</sup>, Yufei Jia<sup>2*</sup>, Yiyi Yan<sup>3</sup>, Zhixing Chen<sup>1</sup>,
+      Tiao Tan<sup>1</sup>, Zifan Wang<sup>4</sup>, Guangyu Wang<sup>1</sup>,
+      BoKui Chen<sup>1†</sup>, Guyue Zhou<sup>5†</sup>
+    </p>
+    <p class="affil">
+      <sup>1</sup>Tsinghua Univ. (Shenzhen) ·
+      <sup>2</sup>Tsinghua Univ. (Beijing) ·
+      <sup>3</sup>DISCOVER Robotics ·
+      <sup>4</sup>HKUST (Guangzhou) ·
+      <sup>5</sup>AIR, Tsinghua Univ.
+      <span class="note-line"><span class="i18n-en">* Equal contribution &nbsp;·&nbsp; † Corresponding authors</span><span class="i18n-zh">* 共同一作 &nbsp;·&nbsp; † 通讯作者</span></span>
+    </p>
+
+    <div class="cta-row">
+      <a class="btn btn-primary" href="paper/index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        <span class="i18n-en">Paper</span><span class="i18n-zh">论文</span>
+      </a>
+      <a class="btn" href="https://arxiv.org/abs/2509.17390" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        arXiv
+      </a>
+      <a class="btn" href="https://github.com/discoverse-dev/FGGS-LiDAR" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17 4.6 18 4.9 18 4.9c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6 4.6-1.5 7.9-5.8 7.9-10.9C23.5 5.7 18.3.5 12 .5z"/></svg>
+        <span class="i18n-en">Code</span><span class="i18n-zh">代码</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<!-- ============================ Teaser videos ============================ -->
+<section class="section" style="padding-top: 24px;">
+  <div class="container video-stack">
+    <div>
+      <div class="media-wrap">
+        <video class="demo" autoplay muted loop playsinline preload="metadata" poster="./static/images/teaser_01.png">
+          <source src="./static/videos/demo_show.mp4" type="video/mp4">
+        </video>
+      </div>
+      <p class="caption"><span class="i18n-en">LiDAR simulation demo in Isaac Gym on a large 3DGS scene.</span><span class="i18n-zh">在 Isaac Gym 中对大规模 3DGS 场景进行的 LiDAR 仿真演示。</span></p>
+    </div>
+    <div>
+      <div class="media-wrap">
+        <video class="demo" autoplay muted loop playsinline preload="metadata">
+          <source src="./static/videos/demo_sim.mp4" type="video/mp4">
+        </video>
+      </div>
+      <p class="caption"><span class="i18n-en">Real-time LiDAR simulation (3DGS → Mesh → LiDAR).</span><span class="i18n-zh">实时 LiDAR 仿真（3DGS → 网格 → LiDAR）。</span></p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ Metrics ============================ -->
+<section class="section section-alt">
+  <div class="container">
+    <div class="metrics">
+      <div class="metric"><div class="num">500+ FPS</div><div class="label"><span class="i18n-en">Real-time LiDAR returns</span><span class="i18n-zh">实时 LiDAR 出点</span></div></div>
+      <div class="metric"><div class="num">4096</div><div class="label"><span class="i18n-en">Parallel environments</span><span class="i18n-zh">并行仿真环境</span></div></div>
+      <div class="metric"><div class="num">~10×</div><div class="label"><span class="i18n-en">Lower latency vs Isaac Sim</span><span class="i18n-zh">相比 Isaac Sim 的时延</span></div></div>
+      <div class="metric"><div class="num">&gt;10⁸ pts/s</div><div class="label"><span class="i18n-en">Peak point throughput</span><span class="i18n-zh">峰值点云吞吐</span></div></div>
+      <div class="metric"><div class="num"><span class="i18n-en">Pose-free</span><span class="i18n-zh">无需位姿</span></div><div class="label"><span class="i18n-en">No COLMAP / LiDAR supervision</span><span class="i18n-zh">无需 COLMAP 位姿或 LiDAR 监督</span></div></div>
+      <div class="metric"><div class="num">3DGS → Mesh</div><div class="label"><span class="i18n-en">Directly from Gaussian params</span><span class="i18n-zh">直接由高斯参数转换</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ Abstract ============================ -->
+<section id="abstract" class="section">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow"><span class="i18n-en">Abstract</span><span class="i18n-zh">摘要</span></span>
+      <h2><span class="i18n-en">A geometry-first bridge from 3DGS to LiDAR</span><span class="i18n-zh">从 3DGS 到 LiDAR 的几何优先桥梁</span></h2>
+    </div>
+    <p class="lead i18n-en">
+      While <b>3D Gaussian Splatting (3DGS)</b> has emerged as a strong representation for photorealistic
+      rendering, its vast ecosystem of assets remains difficult to use for high-performance LiDAR simulation,
+      a critical tool for robotics and autonomous driving. We present <b>FGGS-LiDAR</b>, a geometry-first
+      framework that bridges this gap in a plug-and-play manner. Our method converts pretrained 3DGS assets
+      into watertight meshes directly from Gaussian parameters, without requiring LiDAR-specific supervision
+      or architectural alterations, via volumetric discretization and <b>Truncated Signed Distance Field
+      (TSDF)</b> extraction. We pair this with a GPU-accelerated ray-casting module that simulates LiDAR
+      returns at over <b>500 FPS</b> and supports batched multi-environment simulation with up to
+      <b>4096 environments</b>. In large-scale parallel settings, FGGS-LiDAR achieves an
+      <b>order-of-magnitude lower</b> LiDAR-simulation latency than Isaac Sim. We validate FGGS-LiDAR on both
+      indoor and outdoor scenes, demonstrating high LiDAR-simulation fidelity. Furthermore, on COLMAP-posed
+      indoor benchmarks, we compare against existing 3DGS-to-mesh baselines and report lower
+      LiDAR-simulation error.
+    </p>
+    <p class="lead i18n-zh">
+      <b>3D 高斯泼溅（3DGS）</b> 已成为照片级真实感渲染的强大表示，但其庞大的资产生态难以直接用于高性能 LiDAR
+      仿真——而 LiDAR 仿真是机器人与自动驾驶的关键工具。我们提出 <b>FGGS-LiDAR</b>，一个即插即用、几何优先的框架。
+      该方法通过体素化离散与<b>截断符号距离场（TSDF）</b>提取，直接从高斯参数将预训练的 3DGS 资产转换为水密网格，
+      无需 LiDAR 专用监督，也无需修改原有架构。我们将其与 GPU 加速的光线投射模块结合，可在 <b>500 FPS 以上</b>
+      模拟 LiDAR 回波，并支持最多 <b>4096 个环境</b> 的批量多环境仿真。在大规模并行场景下，FGGS-LiDAR 相比
+      Isaac Sim 实现了<b>约一个数量级更低</b>的 LiDAR 仿真时延。我们在室内外场景中验证了方法的高仿真保真度；
+      在带 COLMAP 位姿的室内基准上，与已有的 3DGS-to-mesh 方法相比，取得了更低的 LiDAR 仿真误差。
+    </p>
+  </div>
+</section>
+
+<!-- ============================ Highlights ============================ -->
+<section id="highlights" class="section section-alt">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow"><span class="i18n-en">Highlights</span><span class="i18n-zh">亮点</span></span>
+      <h2><span class="i18n-en">Three contributions</span><span class="i18n-zh">三大贡献</span></h2>
+    </div>
+    <div class="cards">
+      <div class="card">
+        <div class="idx">01</div>
+        <h3><span class="i18n-en">Geometry-first, pose-free</span><span class="i18n-zh">几何优先，无需位姿</span></h3>
+        <p><span class="i18n-en">A pose-free pipeline that recovers watertight meshes directly from Gaussian parameters — no COLMAP poses, rendered depth maps, or LiDAR supervision. LiDAR can be simulated from arbitrary pretrained 3DGS assets.</span><span class="i18n-zh">一条无需位姿的流程，直接从高斯参数恢复水密网格——无需 COLMAP 位姿、渲染深度图或 LiDAR 监督，可对任意预训练 3DGS 资产进行 LiDAR 仿真。</span></p>
+      </div>
+      <div class="card">
+        <div class="idx">02</div>
+        <h3><span class="i18n-en">Efficient 3DGS → geometry</span><span class="i18n-zh">高效的 3DGS → 几何</span></h3>
+        <p><span class="i18n-en">GPU-accelerated voxelization with Gaussian AABBs and Morton-sorted LBVH indexing, followed by narrow-band TSDF reconstruction that yields topology-consistent watertight meshes while scaling to large scenes.</span><span class="i18n-zh">基于高斯 AABB 与 Morton 排序 LBVH 索引的 GPU 加速体素化，配合窄带 TSDF 重建，生成拓扑一致的水密网格，并可扩展到大规模场景。</span></p>
+      </div>
+      <div class="card">
+        <div class="idx">03</div>
+        <h3><span class="i18n-en">Massively parallel LiDAR</span><span class="i18n-zh">大规模并行 LiDAR</span></h3>
+        <p><span class="i18n-en">A plug-and-play, GPU-batched ray-casting engine supporting thousands of environments (up to 4096) in parallel at over 500 FPS — substantially outperforming general-purpose simulators such as Isaac Sim.</span><span class="i18n-zh">即插即用的 GPU 批量光线投射引擎，可并行支持数千个环境（最多 4096 个），帧率超过 500 FPS，显著优于 Isaac Sim 等通用仿真器。</span></p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Demo -->
-<section class="hero teaser">
-  <div class="container is-max-desktop">
-    <div class="hero-body">
-      <video class="demo" controls autoplay muted loop playsinline preload="metadata" poster="./static/images/teaser_01.png">
-        <source src="./static/videos/demo_show.mp4" type="video/mp4">
-      </video>
-      <h2 class="subtitle has-text-centered" style="margin-top:12px;">
-          LiDAR simulation demo in Isaac Gym using a graph scene
-      </h2>
-    </div>
-  </div>
-
-  <div class="container is-max-desktop">
-    <div class="hero-body">
-      <video class="demo" controls autoplay muted loop playsinline>
-        <source src="./static/videos/demo_sim.mp4" type="video/mp4">
-        Your browser does not support HTML5 video.
-      </video>
-      <h2 class="subtitle has-text-centered" style="margin-top:12px;">
-        Real-time LiDAR simulation in Isaac Gym (3DGS → Mesh → LiDAR)
-      </h2>
-    </div>
-  </div>
-
-</section>
-
-<!-- Abstract -->
-<section id="abstract" class="section">
-  <div class="container is-max-desktop has-text-centered">
-    <h2 class="title is-3">Abstract</h2>
-    <div class="content has-text-justified">
-      <p>
-        While <b>3D Gaussian Splatting (3DGS)</b> has revolutionized photorealistic rendering, its vast ecosystem of assets remains incompatible with high-performance LiDAR simulation, a critical tool for robotics and autonomous driving.
-        We present <b>FGGS-LiDAR</b>, a framework that bridges this gap with a truly plug-and-play approach.
-        Our method converts <i>any</i> pretrained 3DGS model into a high-fidelity, watertight mesh without requiring LiDAR-specific supervision or architectural alterations.
-      </p>
-      <p>
-        This conversion is achieved through a general pipeline of volumetric discretization and <b>Truncated Signed Distance Field (TSDF)</b> extraction.
-        We pair this with a highly optimized, GPU-accelerated ray-casting module that simulates LiDAR returns at over <b>500 FPS</b>.
-        We validate our approach on indoor and outdoor scenes, demonstrating exceptional geometric fidelity.
-        By enabling the direct reuse of 3DGS assets for geometrically accurate depth sensing, our framework extends their utility beyond visualization and unlocks new capabilities for scalable, multimodal simulation.
-      </p>
-    </div>
-  </div>
-</section>
-
-<!-- ===== System (ordered blocks, no "Method" group) ===== -->
-<section id="system" class="section">
-  <div class="container is-max-desktop">
-
-    <!-- 1. System Overview -->
-    <div class="box">
-      <h2 class="title is-3 has-text-centered">System Overview</h2>
-      <img src="./static/images/teaser_01.png" alt="System Overview" class="figure">
-      <p class="explain">
-        FGGS-LiDAR integrates Gaussian-based scene representation, watertight mesh reconstruction, and GPU-parallel LiDAR simulation. 
-        Pretrained 3DGS assets are discretized into occupancy volumes, fused into a narrow-band TSDF, and converted to meshes. 
-        A BVH-accelerated ray-casting engine then performs first-hit queries at real-time rates, enabling physically grounded, scalable LiDAR sensing directly from general 3DGS content.
-      </p>
+<!-- ============================ Method ============================ -->
+<section id="method" class="section">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow"><span class="i18n-en">Method</span><span class="i18n-zh">方法</span></span>
+      <h2><span class="i18n-en">From Gaussians to LiDAR returns</span><span class="i18n-zh">从高斯到 LiDAR 回波</span></h2>
     </div>
 
-    <!-- 2. 3DGS Voxelization -->
-    <div class="box">
-      <h2 class="title is-3 has-text-centered">3DGS Voxelization</h2>
+    <!-- Overview -->
+    <div class="block">
+      <h3><span class="i18n-en">Framework Overview</span><span class="i18n-zh">框架总览</span></h3>
+      <div class="sub">3DGS → Occupancy → TSDF Mesh → BVH Ray-casting</div>
+      <img src="./static/images/teaser_01.png" alt="FGGS-LiDAR overview" class="figure">
+      <p class="explain"><span class="i18n-en">FGGS-LiDAR integrates Gaussian-based scene representation, watertight mesh reconstruction, and GPU-parallel LiDAR simulation. Pretrained 3DGS assets are discretized into occupancy volumes, fused into a narrow-band TSDF, and converted to meshes. A BVH-accelerated ray-casting engine then performs first-hit queries at real-time rates, enabling physically grounded, scalable LiDAR sensing directly from general 3DGS content.</span><span class="i18n-zh">FGGS-LiDAR 将高斯场景表示、水密网格重建与 GPU 并行 LiDAR 仿真融为一体。预训练 3DGS 资产先被离散化为占据体，融合为窄带 TSDF，再转换为网格；随后由 BVH 加速的光线投射引擎以实时帧率完成首次命中查询，从而可直接基于通用 3DGS 内容进行物理可信、可扩展的 LiDAR 感知。</span></p>
+    </div>
+
+    <!-- Voxelization -->
+    <div class="block">
+      <h3><span class="i18n-en">3DGS Voxelization</span><span class="i18n-zh">3DGS 体素化</span></h3>
+      <div class="sub">LBVH-accelerated Gaussian-to-occupancy</div>
       <img src="./static/images/voxelization_01.png" alt="Voxelization" class="figure">
-      <p class="explain">
-        We convert continuous Gaussian fields into sparse occupancy grids via LBVH-accelerated accumulation. 
-        Each Gaussian contributes probabilistically to local density, preserving thin structures and high-frequency geometry while keeping the memory footprint compact. 
-        This forms the basis for robust TSDF reconstruction in the next stage.
-      </p>
+      <p class="explain"><span class="i18n-en">Gaussian primitives are organized by an LBVH for efficient spatial querying, enabling localized voxel-density evaluation instead of global Gaussian–voxel accumulation. Thresholding and surface filtering then produce a compact, surface-supporting occupancy representation that preserves thin structures and high-frequency geometry for the next stage.</span><span class="i18n-zh">高斯基元由 LBVH 组织以实现高效空间查询，从而进行局部体素密度评估，而非全局的高斯–体素累加。随后通过阈值化与表面过滤，得到紧凑且支撑表面的占据表示，保留薄结构与高频几何，供下一阶段使用。</span></p>
     </div>
 
-    <!-- 3. Denoised → Mesh -->
-    <div class="box">
-      <h2 class="title is-3 has-text-centered">Denoised → Mesh</h2>
-      <img src="./static/images/denoised_01.png" alt="Denoised Mesh" class="figure">
-      <p class="explain">
-        We perform narrow-band TSDF propagation and extract surfaces with Marching Cubes, followed by structure-preserving smoothing. 
-        The resulting meshes are watertight and topologically consistent, eliminating local artifacts without shrinking geometry. 
-        Such meshes are ideal for accurate, physically meaningful ray–triangle intersection in LiDAR simulation.
-      </p>
+    <!-- Mesh -->
+    <div class="block">
+      <h3><span class="i18n-en">Denoised → Mesh</span><span class="i18n-zh">去噪 → 网格</span></h3>
+      <div class="sub">Narrow-band TSDF + watertight isosurface</div>
+      <img src="./static/images/denoised_01.png" alt="Denoised mesh" class="figure">
+      <p class="explain"><span class="i18n-en">Surface-supporting voxels are denoised and converted into a narrow-band TSDF, from which a watertight isosurface is extracted. Mesh simplification and structure-preserving smoothing then reduce simulation cost while preserving the geometry needed for accurate LiDAR first-hit queries — eliminating local artifacts without shrinking geometry.</span><span class="i18n-zh">支撑表面的体素经去噪后转换为窄带 TSDF，并从中提取水密等值面。随后通过网格简化与保结构平滑，在保留 LiDAR 首次命中查询所需几何的同时降低仿真开销——在不收缩几何的前提下消除局部伪影。</span></p>
     </div>
 
-    <!-- 4. Scene Rendering (moved after Mesh) -->
-    <div class="box">
-      <h2 class="title is-3 has-text-centered">Scene Rendering</h2>
-      <img src="./static/images/rendering_01.png" alt="Rendering" class="figure">
-      <p class="explain">
-        Mesh-based rendering retains the global structure and sharp boundaries of the original scenes while providing reliable normals and visibility for sensing. 
-        Compared to splat-only rendering, the reconstructed geometry offers consistent surfaces and fewer blending artifacts, 
-        ensuring high visual fidelity and compatibility with physically grounded LiDAR ray interactions.
-      </p>
+    <!-- Rendering -->
+    <div class="block">
+      <h3><span class="i18n-en">LiDAR Across Scenes</span><span class="i18n-zh">多场景 LiDAR</span></h3>
+      <div class="sub">3DGS · voxelized mesh · simulated LiDAR</div>
+      <img src="./static/images/rendering_01.png" alt="LiDAR across scenes" class="figure">
+      <p class="explain"><span class="i18n-en">For each scene we show, from left to right, the 3DGS visualization, the voxelized mesh, and the LiDAR point cloud rendered by FGGS-LiDAR. The reconstructed geometry retains global structure and sharp boundaries with reliable normals and visibility, yielding consistent surfaces and physically grounded ray interactions across both indoor and outdoor scenes.</span><span class="i18n-zh">对每个场景，从左到右依次为 3DGS 可视化、体素化网格，以及由 FGGS-LiDAR 渲染的 LiDAR 点云。重建几何保留了全局结构与清晰边界，并提供可靠的法向与可见性，从而在室内外场景中获得一致的表面与物理可信的光线交互。</span></p>
     </div>
-
-    <!-- 5. Depth Limitations (rewritten with your content) -->
-    <div class="box">
-      <h2 class="title is-3 has-text-centered">Depth Limitations</h2>
-      <img src="./static/images/depth_01.png" alt="Depth Limitations" class="figure">
-      <p class="explain">
-        <b>Imaging principle.</b> In 3DGS, “depth” is an opacity-weighted expectation along the camera ray— a view-dependent average rather than a true geometric intersection. 
-        This leads to characteristic artifacts: edges and thin structures appear blurred or widened due to splat blending, 
-        and underconstrained regions (back-facing or rarely observed surfaces, low-texture areas, glossy materials) produce dropouts or holes. 
-        LiDAR instead reports first-return geometric distances, directly tied to scene geometry and free of averaging artifacts.
-      </p>
-      <p class="explain">
-        <b>Computational efficiency.</b> Depth rendering in 3DGS accumulates over many anisotropic Gaussians per pixel; 
-        its cost and memory grow with image resolution and footprint, making high-res rendering expensive. 
-        Our simulator performs BVH-accelerated ray–triangle intersections whose cost mainly scales with beam and triangle counts. 
-        Independent rays enable highly efficient GPU parallelization and stable performance across scenes.
-      </p>
-    </div>
-
   </div>
 </section>
 
-<!-- Results -->
-<section id="results" class="section">
-  <div class="container is-max-desktop">
-    <h2 class="title is-3 has-text-centered">Results</h2>
+<!-- ============================ Results ============================ -->
+<section id="results" class="section section-alt">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow"><span class="i18n-en">Results</span><span class="i18n-zh">结果</span></span>
+      <h2><span class="i18n-en">Fidelity, ablations &amp; real-time performance</span><span class="i18n-zh">保真度、消融与实时性能</span></h2>
+    </div>
 
-    <div class="box">
-      <h3 class="title is-5 has-text-centered">LiDAR FPS vs Triangle Count</h3>
+    <div class="block">
+      <h3><span class="i18n-en">LiDAR FPS vs Mesh Complexity</span><span class="i18n-zh">LiDAR 帧率 vs 网格复杂度</span></h3>
+      <div class="sub">frame rate</div>
       <img src="./static/images/lidar_fps_01.png" alt="LiDAR FPS" class="figure">
-      <p class="explain">
-        <b>Frame rate.</b> Owing to the BVH acceleration structure, across all evaluated 3DGS scenes (up to ~6M Gaussian primitives) we observe no systematic degradation of simulation frame rate with increasing primitive count. 
-        Within this scale, performance is effectively decoupled from raw cardinality. 
-        Instead, traversal efficiency is primarily governed by spatial distribution characteristics—such as clustering patterns, local density heterogeneity, and occlusion layering—rather than absolute counts. 
-        Our system delivers <i>far beyond real-time performance</i> and ranks among the fastest in peer comparisons, highlighting the efficiency of the proposed pipeline.
-      </p>
+      <p class="explain"><span class="i18n-en">Thanks to the BVH acceleration structure, across all evaluated 3DGS scenes (up to ~6M Gaussian primitives) we observe no systematic degradation of frame rate with primitive count: performance is effectively decoupled from raw cardinality and is instead governed by spatial distribution. FGGS-LiDAR delivers far beyond real-time performance and ranks among the fastest in peer comparisons.</span><span class="i18n-zh">得益于 BVH 加速结构，在所有评测的 3DGS 场景（最多约 600 万高斯基元）中，帧率不随基元数量系统性下降：性能基本与原始数量解耦，主要由空间分布决定。FGGS-LiDAR 提供远超实时的性能，在同类对比中名列前茅。</span></p>
     </div>
 
-    <div class="box">
-      <h3 class="title is-5 has-text-centered">LiDAR Throughput vs Triangle Count</h3>
-      <img src="./static/images/lidar_throughput_01.png" alt="LiDAR Throughput" class="figure">
-      <p class="explain">
-        <b>Throughput.</b> Point throughput grows with sensor density and remains high across mesh complexities. 
-        Despite lower FPS, denser sensors (e.g., OS128, VLP32) achieve significantly higher throughput, exceeding 1×10<sup>8</sup> points/s on lightweight meshes and sustaining &gt;7.5×10<sup>7</sup> points/s even at multi-million triangle scales. 
-        This demonstrates that our method fully exploits BVH-accelerated parallelism and maintains high utilization across diverse LiDAR types.
-      </p>
+    <div class="block">
+      <h3><span class="i18n-en">LiDAR Throughput vs Mesh Complexity</span><span class="i18n-zh">LiDAR 吞吐 vs 网格复杂度</span></h3>
+      <div class="sub">throughput</div>
+      <img src="./static/images/lidar_throughput_01.png" alt="LiDAR throughput" class="figure">
+      <p class="explain"><span class="i18n-en">Point throughput grows with sensor density and stays high across mesh complexities. Denser sensors (e.g., OS128, VLP32) exceed 1×10⁸ points/s on lightweight meshes and sustain &gt;7.5×10⁷ points/s even at multi-million-triangle scales — fully exploiting BVH-accelerated parallelism across diverse LiDAR types.</span><span class="i18n-zh">点云吞吐随传感器密度增长，并在不同网格复杂度下保持高位。更密集的传感器（如 OS128、VLP32）在轻量网格上超过 1×10⁸ 点/秒，即便在数百万三角形规模下仍维持 &gt;7.5×10⁷ 点/秒，充分发挥了 BVH 加速并行在多种 LiDAR 上的优势。</span></p>
+    </div>
+
+    <!-- Table 1: fidelity vs GT -->
+    <div class="table-card">
+      <h3><span class="i18n-en">Fidelity vs. GT Mesh Simulation</span><span class="i18n-zh">与 GT 网格仿真的保真度对比</span></h3>
+      <div class="sub">CD / F-score @ 0.05 m</div>
+      <table class="data">
+        <thead>
+          <tr class="grouphdr">
+            <th class="name" rowspan="2"><span class="i18n-en">LiDAR</span><span class="i18n-zh">激光雷达</span></th>
+            <th colspan="2">Indoor-RealLiDAR</th>
+            <th colspan="2">Outdoor-RealLiDAR</th>
+          </tr>
+          <tr><th>CD ↓</th><th>F-score ↑</th><th>CD ↓</th><th>F-score ↑</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="name">HDL64</td><td>0.0034</td><td>0.9950</td><td>0.0157</td><td>0.9816</td></tr>
+          <tr><td class="name">OS128</td><td>0.0034</td><td>0.9950</td><td>0.0104</td><td>0.9867</td></tr>
+          <tr><td class="name">VLP32</td><td>0.0053</td><td>0.9918</td><td>0.0250</td><td>0.9789</td></tr>
+          <tr class="sum"><td class="name">Avg.</td><td>0.0041</td><td>0.9939</td><td>0.0170</td><td>0.9824</td></tr>
+        </tbody>
+      </table>
+      <p class="table-note"><span class="i18n-en">Our simulation closely matches ground-truth LiDAR (centimeter-scale CD, F-score &gt; 0.98) across three sensors on real indoor and outdoor scenes.</span><span class="i18n-zh">在真实室内/室外场景、三种传感器下，我们的仿真与真值 LiDAR 高度吻合（CD 为厘米级，F-score &gt; 0.98）。</span></p>
+    </div>
+
+    <!-- Table 2: vs 3DGS-to-mesh baselines -->
+    <div class="table-card">
+      <h3><span class="i18n-en">vs. 3DGS-to-Mesh Baselines (VLP32)</span><span class="i18n-zh">与 3DGS-to-Mesh 基线对比（VLP32）</span></h3>
+      <div class="sub">Indoor-COLMAP-1/2 · same pose &amp; beam layout</div>
+      <table class="data">
+        <thead>
+          <tr>
+            <th class="name"><span class="i18n-en">Method</span><span class="i18n-zh">方法</span></th>
+            <th>CD ↓</th><th>F-score ↑</th><th>T (min) ↓</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="group"><td colspan="4"><span class="i18n-en">Scene 1</span><span class="i18n-zh">场景 1</span></td></tr>
+          <tr><td class="name"><b>Ours</b></td><td class="best">0.0089</td><td class="best">0.9957</td><td class="best">&lt;1</td></tr>
+          <tr><td class="name">GS2Mesh</td><td>0.0126</td><td>0.9902</td><td>20</td></tr>
+          <tr><td class="name">MILo (std)</td><td>0.0523</td><td>0.8910</td><td>30</td></tr>
+          <tr><td class="name">MILo (highres)</td><td>0.1647</td><td>0.7625</td><td>120</td></tr>
+          <tr class="group"><td colspan="4"><span class="i18n-en">Scene 2</span><span class="i18n-zh">场景 2</span></td></tr>
+          <tr><td class="name"><b>Ours</b></td><td class="best">0.0182</td><td class="best">0.9815</td><td class="best">&lt;1</td></tr>
+          <tr><td class="name">GS2Mesh</td><td>0.0816</td><td>0.9582</td><td>20</td></tr>
+          <tr><td class="name">MILo (std)</td><td>0.8206</td><td>0.8026</td><td>30</td></tr>
+          <tr><td class="name">MILo (highres)</td><td>0.3783</td><td>0.8042</td><td>120</td></tr>
+        </tbody>
+      </table>
+      <p class="table-note"><span class="i18n-en"><b>T</b> is end-to-end 3DGS→mesh time; pose-dependent baselines follow their default protocol (rendering &amp; fusion of 400 COLMAP-posed views). FGGS-LiDAR attains the lowest error and the shortest reconstruction time.</span><span class="i18n-zh"><b>T</b> 为端到端 3DGS→网格时间；位姿相关基线遵循其默认流程（渲染并融合 400 个 COLMAP 视角）。FGGS-LiDAR 取得最低误差与最短重建时间。</span></p>
+      <div class="legend"><span><i class="b"></i><span class="i18n-en">best</span><span class="i18n-zh">最优</span></span></div>
+    </div>
+
+    <!-- Table 3: ablation -->
+    <div class="table-card">
+      <h3><span class="i18n-en">Ablation Study</span><span class="i18n-zh">消融实验</span></h3>
+      <div class="sub">A: system components · B: post-processing</div>
+      <table class="data">
+        <thead>
+          <tr>
+            <th class="name"><span class="i18n-en">Variant</span><span class="i18n-zh">变体</span></th>
+            <th>VoxPts (K)</th><th>Faces (M)</th><th>T (s) ↓</th><th>GPU Mem (GB) ↓</th><th>CD ↓</th><th>F-score ↑</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="group"><td colspan="7"><span class="i18n-en">Block A — system ablations (post-processing fixed)</span><span class="i18n-zh">A 部分 —— 系统消融（后处理固定）</span></td></tr>
+          <tr><td class="name"><b>Full pipeline</b></td><td>8192.2</td><td>1.478</td><td>60</td><td>22</td><td class="snd">0.00688</td><td class="snd">0.9970</td></tr>
+          <tr><td class="name">w/o surface extraction</td><td>21274.7</td><td>1.462</td><td>90</td><td>26</td><td class="best">0.00667</td><td class="best">0.9975</td></tr>
+          <tr><td class="name">w/o narrow-band TSDF</td><td>8192.2</td><td>1.478</td><td>&gt;600</td><td>22</td><td>0.00688</td><td>0.9970</td></tr>
+          <tr><td class="name">w/o flood sign seeding</td><td>8192.2</td><td>1.964</td><td>80</td><td>20.65</td><td>0.01390</td><td>0.9943</td></tr>
+          <tr><td class="name">w/o LBVH</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+          <tr class="group"><td colspan="7"><span class="i18n-en">Block B — post-processing (pipeline fixed)</span><span class="i18n-zh">B 部分 —— 后处理（流程固定）</span></td></tr>
+          <tr><td class="name">w/o decim., w/o smooth</td><td>8192.2</td><td>16.707</td><td>55</td><td>22</td><td>0.01554</td><td>0.9929</td></tr>
+          <tr><td class="name">w/o decim., w/ smooth</td><td>8192.2</td><td>16.761</td><td>80</td><td>22</td><td>0.01816</td><td>0.9922</td></tr>
+          <tr><td class="name">w/ decim., w/o smooth</td><td>8192.2</td><td>1.478</td><td>57</td><td>22</td><td>0.00820</td><td>0.9959</td></tr>
+        </tbody>
+      </table>
+      <p class="table-note"><span class="i18n-en">Narrow-band TSDF is essential for throughput (60 s vs. &gt;600 s); decimation is the main driver of low face count and high fidelity. Removing LBVH is infeasible end-to-end (~10³× slower in a micro-benchmark).</span><span class="i18n-zh">窄带 TSDF 对吞吐至关重要（60 s 对比 &gt;600 s）；网格抽取是降低面数、提升保真度的主因。端到端移除 LBVH 不可行（微基准中慢约 10³ 倍）。</span></p>
+      <div class="legend"><span><i class="b"></i><span class="i18n-en">best</span><span class="i18n-zh">最优</span></span><span><i class="s"></i><span class="i18n-en">2nd best</span><span class="i18n-zh">次优</span></span></div>
     </div>
   </div>
 </section>
 
-<!-- BibTeX -->
+<!-- ============================ BibTeX ============================ -->
 <section id="bibtex" class="section">
-  <div class="container is-max-desktop content">
-    <h2 class="title">BibTeX</h2>
-<pre><code>@misc{fggslidar,
-      title        = {FGGS-LiDAR: Ultra-Fast, GPU-Accelerated Simulation from General 3DGS Models to LiDAR}, 
-      author       = {Junzhe Wu and Yufei Jia and Yiyi Yan and Zhixing Chen and Tiao Tan and Zifan Wang and Guangyu Wang and Bokui Chen and Guyue Zhou},
-      year         = {2025},
-      eprint       = {2509.17390},
-      archivePrefix= {arXiv},
-      primaryClass = {cs.CV},
-      url          = {https://arxiv.org/abs/2509.17390}
-}
-</code></pre>
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow"><span class="i18n-en">Citation</span><span class="i18n-zh">引用</span></span>
+      <h2>BibTeX</h2>
+    </div>
+    <div class="bibtex-box">
+      <button class="copy-btn" id="copyBib"><span class="i18n-en">Copy</span><span class="i18n-zh">复制</span></button>
+<pre id="bibText">@article{wu2025fggs,
+  title={FGGS-LiDAR: Ultra-Fast, GPU-Accelerated Simulation from General 3DGS Models to LiDAR},
+  author={Wu, Junzhe and Jia, Yufei and Yan, Yiyi and Chen, Zhixing and Tan, Tiao and Wang, Zifan and Wang, Guangyu and Chen, BoKui and Zhou, Guyue},
+  journal={arXiv preprint arXiv:2509.17390},
+  year={2025}
+}</pre>
+    </div>
   </div>
 </section>
 
+<!-- ============================ Footer ============================ -->
+<footer class="footer">
+  <div class="container">
+    <div class="foot-links">
+      <a href="paper/index.html"><span class="i18n-en">Paper</span><span class="i18n-zh">论文</span></a>
+      <a href="https://arxiv.org/abs/2509.17390" target="_blank" rel="noopener">arXiv</a>
+      <a href="https://github.com/discoverse-dev/FGGS-LiDAR" target="_blank" rel="noopener"><span class="i18n-en">Code</span><span class="i18n-zh">代码</span></a>
+      <a href="https://discoverse-dev.github.io/FGGS-LiDAR" target="_blank" rel="noopener"><span class="i18n-en">Project Page</span><span class="i18n-zh">项目主页</span></a>
+    </div>
+    <p>© 2026 FGGS-LiDAR · <span class="i18n-en">Accepted to IROS 2026</span><span class="i18n-zh">已被 IROS 2026 接收</span></p>
+  </div>
+</footer>
 
+<script src="./static/js/app.js"></script>
 </body>
 </html>
